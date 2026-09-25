@@ -9,7 +9,6 @@ from typing import AsyncGenerator, Optional
 from fastapi import Depends, HTTPException
 from fastapi.responses import StreamingResponse
 
-from content_engine.api.server import get_engine
 from content_engine.config.providers import DEFAULT_PROVIDERS, ProviderType
 from content_engine.core.cache import ContentCache
 from content_engine.core.engine import ContentEngine
@@ -31,10 +30,17 @@ from content_engine.templates.manager import TemplateManager
 logger = logging.getLogger(__name__)
 
 
+def get_engine_dependency() -> ContentEngine:
+    """Lazily resolve the initialized engine without circular imports."""
+    from content_engine.api.server import get_engine
+
+    return get_engine()
+
+
 class ContentHandler:
     """Handler for content generation requests"""
     
-    def __init__(self, engine: ContentEngine = Depends(get_engine)):
+    def __init__(self, engine: ContentEngine = Depends(get_engine_dependency)):
         self.engine = engine
     
     async def generate_content(self, request_data: dict) -> dict:
@@ -180,7 +186,7 @@ class ContentHandler:
 class PlatformHandler:
     """Handler for platform-specific requests"""
     
-    def __init__(self, engine: ContentEngine = Depends(get_engine)):
+    def __init__(self, engine: ContentEngine = Depends(get_engine_dependency)):
         self.engine = engine
         self._generators = {}
     
@@ -248,7 +254,7 @@ class PlatformHandler:
 class TemplateHandler:
     """Handler for template requests"""
     
-    def __init__(self, engine: ContentEngine = Depends(get_engine)):
+    def __init__(self, engine: ContentEngine = Depends(get_engine_dependency)):
         self.engine = engine
         self.template_manager = TemplateManager()
     
@@ -303,7 +309,7 @@ class TemplateHandler:
 class GenerationHandler:
     """Handler for generation management requests"""
     
-    def __init__(self, engine: ContentEngine = Depends(get_engine)):
+    def __init__(self, engine: ContentEngine = Depends(get_engine_dependency)):
         self.engine = engine
     
     async def get_stats(self) -> dict:

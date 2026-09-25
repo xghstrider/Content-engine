@@ -432,9 +432,12 @@ class AnthropicProvider(AIProvider):
         prompt_parts.append(f"Language: {request.language}")
         
         context = "\n".join(prompt_parts) if prompt_parts else ""
-        
-        return f"Create {request.content_type.value} content for {request.platform.value if request.platform else 'general use'}.
-\n{context}\n\nPrompt: {request.prompt}"
+
+        return (
+            f"Create {request.content_type.value} content for "
+            f"{request.platform.value if request.platform else 'general use'}.\n"
+            f"{context}\n\nPrompt: {request.prompt}"
+        )
 
 
 class GoogleProvider(AIProvider):
@@ -567,9 +570,12 @@ class GoogleProvider(AIProvider):
         prompt_parts.append(f"Language: {request.language}")
         
         context = "\n".join(prompt_parts) if prompt_parts else ""
-        
-        return f"Create {request.content_type.value} content for {request.platform.value if request.platform else 'general use'}.
-\n{context}\n\nPrompt: {request.prompt}"
+
+        return (
+            f"Create {request.content_type.value} content for "
+            f"{request.platform.value if request.platform else 'general use'}.\n"
+            f"{context}\n\nPrompt: {request.prompt}"
+        )
 
 
 class LocalProvider(AIProvider):
@@ -694,9 +700,12 @@ class LocalProvider(AIProvider):
         prompt_parts.append(f"Language: {request.language}")
         
         context = "\n".join(prompt_parts) if prompt_parts else ""
-        
-        return f"Create {request.content_type.value} content for {request.platform.value if request.platform else 'general use'}.
-\n{context}\n\nPrompt: {request.prompt}"
+
+        return (
+            f"Create {request.content_type.value} content for "
+            f"{request.platform.value if request.platform else 'general use'}.\n"
+            f"{context}\n\nPrompt: {request.prompt}"
+        )
 
 
 class ProviderFactory:
