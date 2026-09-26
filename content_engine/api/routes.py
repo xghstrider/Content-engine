@@ -236,6 +236,40 @@ async def change_provider(
     return await handler.change_provider(provider)
 
 
+@router.get("/providers/configured", tags=["providers"])
+async def get_configured_providers(
+    handler: GenerationHandler = Depends(GenerationHandler),
+) -> dict:
+    """List configured providers and default selection."""
+    return await handler.list_configured_providers()
+
+
+@router.post("/providers/configured", tags=["providers"])
+async def save_configured_provider(
+    provider_data: dict,
+    handler: GenerationHandler = Depends(GenerationHandler),
+) -> dict:
+    """Persist a custom provider profile from the browser."""
+    return await handler.save_provider(provider_data)
+
+
+@router.get("/prompts", tags=["prompts"])
+async def list_prompt_presets(
+    handler: GenerationHandler = Depends(GenerationHandler),
+) -> dict:
+    """List saved custom prompt presets."""
+    return await handler.list_prompts()
+
+
+@router.post("/prompts", tags=["prompts"])
+async def save_prompt_preset(
+    prompt_data: dict,
+    handler: GenerationHandler = Depends(GenerationHandler),
+) -> dict:
+    """Save a new prompt preset."""
+    return await handler.save_prompt(prompt_data)
+
+
 # Content type endpoints
 @router.post("/content/twitter", tags=["content", "twitter"])
 async def generate_twitter_content(

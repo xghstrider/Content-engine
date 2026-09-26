@@ -7,6 +7,7 @@ import logging
 from typing import Any, Dict, List, Optional, Union
 
 from content_engine.config.settings import get_settings
+from content_engine.config.web_configuration import web_configuration
 from content_engine.core.cache import ContentCache
 from content_engine.core.generator import ContentGenerator
 from content_engine.core.providers import AIProvider, ProviderFactory
@@ -400,6 +401,10 @@ class ContentEngine:
     async def change_provider(self, provider: Union[str, AIProvider]) -> None:
         """Change the AI provider"""
         if isinstance(provider, str):
+            if provider in web_configuration.list_providers() or provider in {"openai", "anthropic", "google", "local"}:
+                self.settings.ai.default_provider = provider
+                if provider in web_configuration.list_providers():
+                    web_configuration.set_default_provider(provider)
             self.generator.provider = ProviderFactory.create_provider(provider)
         else:
             self.generator.provider = provider

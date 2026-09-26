@@ -10,6 +10,7 @@ from fastapi import Depends, HTTPException
 from fastapi.responses import StreamingResponse
 
 from content_engine.config.providers import DEFAULT_PROVIDERS, ProviderType
+from content_engine.config.web_configuration import web_configuration
 from content_engine.core.cache import ContentCache
 from content_engine.core.engine import ContentEngine
 from content_engine.models.content import ContentRequest, ContentResponse
@@ -342,29 +343,80 @@ class GenerationHandler:
     async def get_providers(self) -> dict:
         """Get available AI providers"""
         try:
-            providers = list(DEFAULT_PROVIDERS.keys())
+            available = web_configuration.list_providers()
+            providers = list(available.keys())
+            default = web_configuration.get_default_provider() or self.engine.settings.ai.default_provider
             return {
                 "providers": providers,
-                "default": self.engine.settings.ai.default_provider,
+                "default": default,
             }
         except Exception as e:
             logger.error(f"Failed to get providers: {e}")
             raise HTTPException(status_code=400, detail=str(e))
-    
+
     async def get_current_provider(self) -> dict:
         """Get current provider information"""
         try:
             info = await self.engine.get_provider_info()
+            info["default_provider"] = web_configuration.get_default_provider() or self.engine.settings.ai.default_provider
             return info
         except Exception as e:
             logger.error(f"Failed to get current provider: {e}")
             raise HTTPException(status_code=400, detail=str(e))
-    
+
     async def change_provider(self, provider: str) -> dict:
         """Change the AI provider"""
         try:
             await self.engine.change_provider(provider)
+            self.engine.settings.ai.default_provider = provider
+            if provider in web_configuration.list_providers():
+                web_configuration.set_default_provider(provider)
             return {"message": f"Provider changed to {provider}", "provider": provider}
         except Exception as e:
             logger.error(f"Failed to change provider: {e}")
             raise HTTPException(status_code=400, detail=str(e))
+
+    async def save_provider(self, provider_data: dict) -> dict:
+        """Persist a custom provider profile"""
+        try:
+            provider_id = provider_data.get("id") or provider_data.get("name") or provider_data.get("provider_id")
+            if not provider_id:
+                raise ValueError("A provider id is required")
+            saved = web_configuration.save_provider(str(provider_id), provider_data)
+            self.engine.settings.ai.default_provider = str(provider_id)
+            web_configuration.set_default_provider(str(provider_id))
+            return {"message": "Provider saved", "provider": saved}
+        except Exception as e:
+            logger.error(f"Failed to save custom provider: {e}")
+            raise HTTPException(status_code=400, detail=str(e))
+
+    async def list_configured_providers(self) -> dict:
+        """Return configured provider data for the UI."""
+        try:
+            providers = web_configuration.list_providers()
+            return {
+                "providers": providers,
+                "default_provider": web_configuration.get_default_provider() or self.engine.settings.ai.default_provider,
+            }
+        except Exception as e:
+            logger.error(f"Failed to list configured providers: {e}")
+            raise HTTPException(status_code=400, detail=str(e))
+
+    async def save_prompt(self, prompt_data: dict) -> dict:
+        """Persist a reusable prompt preset"""
+        try:
+            prompt_id = prompt_data.get("id") or prompt_data.get("name") or prompt_data.get("prompt_id")
+            if not prompt_id:
+                raise ValueError("A prompt id is required")
+            saved = web_configuration.save_prompt(str(prompt_id), prompt_data)
+            return {"message": "Prompt saved", "prompt": saved}
+        except Exception as e:
+            logger.error(f"Failed to save prompt preset: {e}")
+            raise HTTPException(status_code=400, detail=str(e))
+
+    async def list_prompts(self) -> dict:
+        """List reusable prompt presets."""
+        try:
+            return {"prompts": web_configuration.list_prompts()}
+        except Exception as e:
+            logger.error(f"Failed to list prompt presets: {e}")

@@ -12,10 +12,12 @@ import httpx
 
 from content_engine.config.providers import AIProviderConfig, ProviderType
 from content_engine.config.settings import get_settings
+from content_engine.config.web_configuration import web_configuration
 from content_engine.models.content import ContentRequest
 from content_engine.models.generation import GenerationConfig
 
 logger = logging.getLogger(__name__)
+settings = get_settings()
 
 
 class AIProvider(ABC):
@@ -720,46 +722,48 @@ class ProviderFactory:
         config: Optional[AIProviderConfig] = None
     ) -> AIProvider:
         """Create an AI provider instance"""
-        if isinstance(provider_type, str):
-            provider_type = ProviderType(provider_type)
-        
-        # Get settings
-        settings = get_settings()
-        
-        # Use provided config or create from settings
+        provider_name = provider_type.value if isinstance(provider_type, ProviderType) else str(provider_type)
+        custom_profile = web_configuration.get_provider(provider_name)
+
         if config is None:
-            if provider_type == ProviderType.OPENAI:
-                config = AIProviderConfig(
-                    provider_type=provider_type,
-                    api_key=settings.ai.openai_api_key,
-                    base_url=settings.ai.openai_base_url,
-                    model=settings.ai.openai_model,
-                )
-            elif provider_type == ProviderType.ANTHROPIC:
-                config = AIProviderConfig(
-                    provider_type=provider_type,
-                    api_key=settings.ai.anthropic_api_key,
-                    base_url=settings.ai.anthropic_base_url,
-                    model=settings.ai.anthropic_model,
-                )
-            elif provider_type == ProviderType.GOOGLE:
-                config = AIProviderConfig(
-                    provider_type=provider_type,
-                    api_key=settings.ai.google_api_key,
-                    model=settings.ai.google_model,
-                )
-            elif provider_type == ProviderType.LOCAL:
-                config = AIProviderConfig(
-                    provider_type=provider_type,
-                    model=settings.ai.local_model_path or "llama-2-7b-chat",
-                    extra_config={
-                        "model_path": settings.ai.local_model_path
-                    } if settings.ai.local_model_path else {},
-                )
+            if custom_profile:
+                config = AIProviderConfig.from_dict(custom_profile)
             else:
-                raise ValueError(f"Unknown provider type: {provider_type}")
-        
-        # Create the provider
+                provider_value = ProviderType(provider_name) if provider_name in {item.value for item in ProviderType} else ProviderType.OPENAI
+                if provider_value == ProviderType.OPENAI:
+                    config = AIProviderConfig(
+                        provider_type=provider_value,
+                        api_key=settings.ai.openai_api_key,
+                        base_url=settings.ai.openai_base_url,
+                        model=settings.ai.openai_model,
+                    )
+                elif provider_value == ProviderType.ANTHROPIC:
+                    config = AIProviderConfig(
+                        provider_type=provider_value,
+                        api_key=settings.ai.anthropic_api_key,
+                        base_url=settings.ai.anthropic_base_url,
+                        model=settings.ai.anthropic_model,
+                    )
+                elif provider_value == ProviderType.GOOGLE:
+                    config = AIProviderConfig(
+                        provider_type=provider_value,
+                        api_key=settings.ai.google_api_key,
+                        model=settings.ai.google_model,
+                    )
+                elif provider_value == ProviderType.LOCAL:
+                    config = AIProviderConfig(
+                        provider_type=provider_value,
+                        model=settings.ai.local_model_path or "llama-2-7b-chat",
+                        extra_config={
+                            "model_path": settings.ai.local_model_path
+                        } if settings.ai.local_model_path else {},
+                    )
+                else:
+                    raise ValueError(f"Unknown provider type: {provider_name}")
+
+        if isinstance(provider_type, str):
+            provider_type = ProviderType(custom_profile.get("provider_type", provider_name)) if custom_profile else ProviderType(provider_name)
+
         if provider_type == ProviderType.OPENAI:
             return OpenAIProvider(config)
         elif provider_type == ProviderType.ANTHROPIC:

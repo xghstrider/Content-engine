@@ -46,7 +46,14 @@ class ContentGenerator:
     ) -> ContentResponse:
         """Generate content from a request"""
         start_time = time.time()
-        
+
+        if request.provider:
+            self.provider = ProviderFactory.create_provider(request.provider)
+        if request.model:
+            self.provider.config.model = request.model
+        if request.temperature is not None:
+            self.provider.config.temperature = request.temperature
+
         # Create generation config
         gen_config = config or GenerationConfig()
         

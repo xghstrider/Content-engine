@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#163b32">
+  <title>Content Engine</title>
+  <link rel="stylesheet" href="/assets/styles.css">
+  <script src="/assets/app.js" defer></script>
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <a class="brand" href="/" aria-label="Content Engine home">
+        <span class="brand-mark">ce</span>
+        <span class="brand-name">content<span>engine</span></span>
+      </a>
+      <div class="sidebar-label">Workspace</div>
+      <nav class="primary-nav" aria-label="Main navigation">
+        <button class="nav-item active" data-view="compose" type="button"><span class="nav-icon">✳</span>Compose</button>
+        <button class="nav-item" data-view="templates" type="button"><span class="nav-icon">▤</span>Templates</button>
+        <button class="nav-item" data-view="system" type="button"><span class="nav-icon">⌘</span>System</button>
+      </nav>
+      <div class="sidebar-bottom">
+        <div class="connection"><span class="connection-dot" id="connection-dot"></span><span id="connection-label">Connecting to engine</span></div>
+        <a href="/docs" target="_blank" rel="noreferrer">API documentation <span>↗</span></a>
+      </div>
+    </aside>
+
+    <main class="main-area">
+      <header class="topbar">
+        <div class="breadcrumbs"><span>Workspace</span><span class="crumb-separator">/</span><strong id="current-section">Compose</strong></div>
+        <div class="topbar-right"><span class="live-indicator">LOCAL ENGINE</span><button class="icon-button" id="refresh-button" type="button" title="Refresh system status" aria-label="Refresh system status">↻</button></div>
+      </header>
+
+      <section class="view active" id="view-compose" aria-labelledby="compose-title">
+        <div class="page-heading">
+          <div><div class="eyebrow">CONTENT STUDIO <span>01 / 03</span></div><h1 id="compose-title">Make something<br><em>worth sharing.</em></h1><p>Shape a brief, choose a destination, and create a polished first draft.</p></div>
+          <div class="heading-stamp"><span>CE</span><small>CREATE<br>EDIT<br>EXPORT</small></div>
+        </div>
+
+        <div class="compose-layout">
+          <form class="panel form-panel" id="compose-form">
+            <div class="panel-heading"><div><span class="step-number">01</span><h2>Your brief</h2></div><span class="required-note">* Required</span></div>
+            <label class="field-label" for="prompt">What are we making? <span>*</span></label>
+            <div class="prompt-toolbar">
+              <select id="prompt-preset" class="prompt-preset-select" aria-label="Saved prompt presets">
+                <option value="">Use a saved prompt preset</option>
+              </select>
+              <button class="text-button" id="load-prompt-button" type="button">Apply preset</button>
+            </div>
+            <textarea id="prompt" name="prompt" class="prompt-input" rows="4" placeholder="A launch announcement for our new refillable skincare line…" required></textarea>
+
+            <div class="field-grid">
+              <label class="field-label">Destination
+                <select id="platform" name="platform">
+                  <option value="">Any platform</option>
+                  <option value="twitter">X / Twitter</option><option value="facebook">Facebook</option><option value="instagram">Instagram</option>
+                  <option value="linkedin">LinkedIn</option><option value="pinterest">Pinterest</option><option value="snapchat">Snapchat</option>
+                  <option value="tiktok">TikTok</option><option value="youtube">YouTube</option><option value="reddit">Reddit</option>
+                  <option value="tumblr">Tumblr</option><option value="whatsapp">WhatsApp</option><option value="telegram">Telegram</option>
+                  <option value="discord">Discord</option><option value="slack">Slack</option><option value="web">Web</option>
+                  <option value="email">Email</option><option value="blog">Blog</option><option value="other">Other</option>
+                </select>
+              </label>
+              <label class="field-label">Content type
+                <select id="content-type" name="content_type">
+                  <option value="text">Text</option><option value="social_post">Social post</option><option value="blog_post">Blog post</option>
+                  <option value="email">Email</option><option value="ad_copy">Ad copy</option><option value="product_description">Product description</option>
+                  <option value="seo_content">SEO content</option><option value="script">Script</option><option value="poem">Poem</option>
+                  <option value="story">Story</option><option value="quote">Quote</option><option value="poll">Poll</option><option value="quiz">Quiz</option>
+                  <option value="markdown">Markdown</option><option value="html">HTML</option><option value="json">JSON</option><option value="code">Code</option>
+                  <option value="image">Image brief</option><option value="video">Video brief</option><option value="audio">Audio brief</option><option value="csv">CSV</option>
+                </select>
+              </label>
+              <label class="field-label">Tone
+                <select id="tone" name="tone"><option value="">Choose a tone</option><option>professional</option><option>casual</option><option>friendly</option><option>formal</option><option>humorous</option><option>sarcastic</option><option>inspirational</option><option>educational</option><option>promotional</option><option>storytelling</option><option>conversational</option><option>technical</option><option>persuasive</option><option>emotional</option></select>
+              </label>
+              <label class="field-label">Style
+                <select id="style" name="style"><option value="">Choose a style</option><option>short</option><option>medium</option><option>long</option><option>concise</option><option>detailed</option><option>simple</option><option>complex</option><option>creative</option><option>direct</option><option>metaphorical</option></select>
+              </label>
+            </div>
+
+            <details class="advanced-options">
+              <summary><span>Fine-tune the draft</span><span class="summary-plus">+</span></summary>
+              <div class="advanced-body">
+                <label class="field-label" for="context">Context <textarea id="context" name="context" rows="2" placeholder="Background, product details, or facts to include"></textarea></label>
+                <label class="field-label" for="keywords">Keywords <input id="keywords" name="keywords" type="text" placeholder="Separate keywords with commas"></label>
+                <label class="field-label" for="custom-instructions">Custom instructions <textarea id="custom-instructions" name="custom_instructions" rows="2" placeholder="Anything else the writer should know"></textarea></label>
+                <div class="field-grid compact-grid">
+                  <label class="field-label">Quality<select id="quality" name="quality"><option>standard</option><option>draft</option><option>premium</option><option>professional</option></select></label>
+                  <label class="field-label">Provider<select id="provider" name="provider"><option value="">Default provider</option></select></label>
+                  <label class="field-label">Min. characters<input id="min-length" type="number" min="1" placeholder="No minimum"></label>
+                  <label class="field-label">Max. characters<input id="max-length" type="number" min="1" placeholder="No maximum"></label>
+                  <label class="field-label">Creativity <output id="temperature-value">0.7</output><input id="temperature" type="range" min="0" max="1" step="0.1" value="0.7"></label>
+                  <label class="field-label">Template<select id="template-select"><option value="">No template</option></select></label>
+                </div>
+                <div class="toggle-row">
+                  <label><input id="use-markdown" type="checkbox"><span>Markdown</span></label>
+                  <label><input id="use-emojis" type="checkbox" checked><span>Emojis</span></label>
+                  <label><input id="use-hashtags" type="checkbox" checked><span>Hashtags</span></label>
+                  <label><input id="include-cta" type="checkbox"><span>Call to action</span></label>
+                  <label><input id="include-questions" type="checkbox"><span>Questions</span></label>
+                </div>
+                <label class="field-label hashtag-field" for="hashtag-count">Hashtag count<input id="hashtag-count" type="number" min="0" max="30" placeholder="Automatic"></label>
+              </div>
+            </details>
+
+            <div class="submit-row">
+              <label class="mode-select">Mode<select id="generation-mode"><option value="single">Single draft</option><option value="alternatives">3 alternatives</option><option value="batch">Batch prompts</option><option value="stream">Live stream</option></select></label>
+              <button class="button button-primary" id="generate-button" type="submit"><span>✳</span> Generate draft</button>
+            </div>
+            <div class="batch-field is-hidden" id="batch-field"><label class="field-label" for="batch-prompts">One prompt per line</label><textarea id="batch-prompts" rows="4" placeholder="A product announcement&#10;A behind-the-scenes post&#10;A customer thank-you"></textarea></div>
+          </form>
+
+          <section class="panel result-panel" aria-labelledby="result-title">
+            <div class="panel-heading result-heading"><div><span class="step-number">02</span><h2 id="result-title">Your draft</h2></div><span class="result-status" id="result-status">READY</span></div>
+            <div class="empty-result" id="empty-result"><div class="empty-glyph">✳</div><h3>A blank page, for now.</h3><p>Your generated copy and performance details will appear here.</p></div>
+            <div class="result-content is-hidden" id="result-content">
+              <div class="result-toolbar"><span id="result-platform">DRAFT</span><div><button class="text-button" id="copy-button" type="button" title="Copy draft">Copy</button><button class="text-button" id="download-button" type="button" title="Download draft">Download</button></div></div>
+              <pre class="output-text" id="output-text"></pre>
+              <div class="result-metrics" id="result-metrics"></div>
+              <div class="result-actions"><button class="button button-secondary" id="regenerate-button" type="button">↻ Regenerate</button><button class="button button-secondary" id="analyze-button" type="button">⌕ Analyze</button></div>
+              <div class="analysis-box is-hidden" id="analysis-box"></div>
+              <div class="alternatives-box is-hidden" id="alternatives-box"></div>
+            </div>
+            <div class="error-box is-hidden" id="error-box" role="alert"></div>
+            <div class="toast is-hidden" id="toast" role="status"></div>
+          </section>
+        </div>
+      </section>
+
+      <section class="view" id="view-templates" aria-labelledby="templates-title">
+        <div class="page-heading compact-heading"><div><div class="eyebrow">START WITH A FRAME <span>02 / 03</span></div><h1 id="templates-title">A good structure<br><em>changes everything.</em></h1><p>Browse the library, fill in the variables, and render a ready-to-use draft.</p></div></div>
+        <div class="template-layout">
+          <section class="panel template-browser">
+            <div class="panel-heading"><div><span class="step-number">01</span><h2>Template library</h2></div><button class="text-button" id="templates-refresh" type="button">↻ Refresh</button></div>
+            <div class="template-filters"><label class="search-field"><span>⌕</span><input id="template-search" type="search" placeholder="Search templates"></label><select id="template-category"><option value="">All categories</option><option value="social_media">Social media</option><option value="blog">Blog</option><option value="email">Email</option><option value="advertising">Advertising</option><option value="product">Product</option><option value="seo">SEO</option><option value="technical">Technical</option><option value="creative">Creative</option><option value="business">Business</option><option value="personal">Personal</option></select><select id="template-type"><option value="">All types</option><option value="text">Text</option><option value="markdown">Markdown</option><option value="html">HTML</option><option value="json">JSON</option><option value="python">Python</option></select></div>
+            <div class="template-list" id="template-list"><div class="loading-state">Loading templates…</div></div>
+          </section>
+          <section class="panel template-detail" id="template-detail">
+            <div class="panel-heading"><div><span class="step-number">02</span><h2>Render template</h2></div></div>
+            <div class="template-empty" id="template-empty"><div class="empty-glyph">▤</div><h3>Choose a template</h3><p>Pick an item from the library to see its fields and preview.</p></div>
+            <div class="template-editor is-hidden" id="template-editor"><div class="selected-template"><span class="template-category-label" id="selected-template-category"></span><h3 id="selected-template-name"></h3><p id="selected-template-description"></p></div><form id="template-form"><div id="template-fields"></div><div class="template-buttons"><button class="button button-primary" type="submit">Render preview <span>→</span></button><button class="button button-secondary" id="use-template-button" type="button">Use in composer</button></div></form><div class="rendered-preview is-hidden" id="rendered-preview"><div class="preview-label">RENDERED OUTPUT</div><pre id="rendered-content"></pre><button class="text-button" id="copy-rendered" type="button">Copy output</button></div></div>
+          </section>
+        </div>
+      </section>
+
+      <section class="view" id="view-system" aria-labelledby="system-title">
+        <div class="page-heading compact-heading"><div><div class="eyebrow">ENGINE CONTROLS <span>03 / 03</span></div><h1 id="system-title">Under the<br><em>hood.</em></h1><p>Provider selection, generation activity, and cache controls for this instance.</p></div></div>
+        <div class="system-grid">
+          <section class="panel system-panel provider-panel"><div class="panel-heading"><div><span class="step-number">01</span><h2>AI provider</h2></div><span class="result-status" id="provider-status">LOADING</span></div><p class="panel-copy">Choose which configured model powers new generations.</p><div class="provider-current"><span class="provider-orbit">◉</span><div><span class="eyebrow">CURRENT</span><strong id="current-provider">Checking provider…</strong><small id="current-model"></small></div></div><form id="provider-form" class="provider-form"><label class="field-label">Switch provider<select id="system-provider"></select></label><button class="button button-primary" type="submit">Apply provider <span>→</span></button></form></section>
+
+          <section class="panel system-panel provider-panel">
+            <div class="panel-heading"><div><span class="step-number">02</span><h2>Custom provider</h2></div></div>
+            <form id="custom-provider-form" class="provider-form">
+              <div class="field-grid compact-grid">
+                <label class="field-label">Provider ID<input id="provider-id" type="text" placeholder="my_openai" required></label>
+                <label class="field-label">Provider type<select id="provider-type"><option value="openai">OpenAI</option><option value="anthropic">Anthropic</option><option value="google">Google</option><option value="local">Local</option></select></label>
+                <label class="field-label">Model<input id="provider-model" type="text" placeholder="gpt-4o-mini" required></label>
+                <label class="field-label">Base URL<input id="provider-base-url" type="text" placeholder="https://api.openai.com/v1"></label>
+                <label class="field-label">API key<input id="provider-api-key" type="password" placeholder="Optional if env already set"></label>
+                <label class="field-label">Timeout<input id="provider-timeout" type="number" value="30"></label>
+                <label class="field-label">Max tokens<input id="provider-max-tokens" type="number" value="4096"></label>
+                <label class="field-label">Temperature<input id="provider-temperature" type="number" min="0" max="2" step="0.1" value="0.7"></label>
+              </div>
+              <button class="button button-primary" type="submit">Save provider <span>→</span></button>
+            </form>
+          </section>
+
+          <section class="panel system-panel provider-panel">
+            <div class="panel-heading"><div><span class="step-number">03</span><h2>Custom prompt</h2></div></div>
+            <form id="custom-prompt-form" class="provider-form">
+              <div class="field-grid compact-grid">
+                <label class="field-label">Prompt ID<input id="prompt-id" type="text" placeholder="launch_copy" required></label>
+                <label class="field-label">Prompt name<input id="prompt-name" type="text" placeholder="Launch copy" required></label>
+              </div>
+              <label class="field-label" for="prompt-instructions">Instructions<textarea id="prompt-instructions" rows="4" placeholder="Write an announcement with a confident tone and a CTA." required></textarea></label>
+              <button class="button button-primary" type="submit">Save prompt <span>→</span></button>
+            </form>
+            <div class="cache-stats" id="saved-prompts-list"><div class="loading-state">Loading prompt presets…</div></div>
+          </section>
+
+          <section class="panel system-panel"><div class="panel-heading"><div><span class="step-number">04</span><h2>Generation stats</h2></div><button class="text-button" id="stats-refresh" type="button">↻ Refresh</button></div><div class="stats-grid" id="generation-stats"><div class="loading-state">Loading stats…</div></div></section>
+          <section class="panel system-panel cache-panel"><div class="panel-heading"><div><span class="step-number">05</span><h2>Content cache</h2></div></div><div class="cache-stats" id="cache-stats"><div class="loading-state">Loading cache…</div></div><button class="button button-danger" id="clear-cache" type="button">Clear cache</button></section>
+          <section class="panel system-panel health-panel"><div class="panel-heading"><div><span class="step-number">06</span><h2>Service health</h2></div></div><div class="health-status"><span class="health-dot" id="health-dot"></span><div><strong id="health-label">Checking service</strong><small id="health-detail">—</small></div></div><a class="docs-link" href="/docs" target="_blank" rel="noreferrer">Open interactive API docs <span>↗</span></a></section>
+        </div>
+        <div class="toast system-toast is-hidden" id="system-toast" role="status"></div>
+      </section>
+    </main>
+  </div>
+</body>
+</html>
